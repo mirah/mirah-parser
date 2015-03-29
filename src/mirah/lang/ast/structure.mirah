@@ -53,4 +53,8 @@ class Annotation < NodeImpl
     child type: TypeName
     child_list values: HashEntry
   end
+  
+  def toString
+    "Annotation(#{type},#{values})"
+  end
 end

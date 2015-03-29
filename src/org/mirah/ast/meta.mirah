@@ -318,6 +318,10 @@ class ListNodeState < BaseNodeState
       def accept(visitor, arg):Object
         visitor.`visitor_method`(self, arg)
       end
+      
+      def toString
+        "#{getClass}(#{@children})" 
+      end
 
 #      public
       def iterator:Iterator

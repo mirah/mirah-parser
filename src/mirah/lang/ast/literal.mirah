@@ -20,6 +20,10 @@ class Array < NodeImpl
   init_node do
     child_list values: Node
   end
+  
+  def toString
+    "Array(#{values})"
+  end
 end
 
 class Fixnum < NodeImpl  # Should we rename this?
@@ -42,6 +46,10 @@ class HashEntry < NodeImpl
   init_node do
     child key: Node
     child value: Node
+  end
+  
+  def toString
+    "HashEntry(#{key},#{value})"
   end
 end
 

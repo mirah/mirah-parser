@@ -40,11 +40,16 @@ class FieldAssign < NodeImpl
     child value: Node
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    attr_accessor isFinal: 'boolean'
   end
 
   def initialize(position:Position, name:Identifier, annotations:List, isStatic:boolean)
     initialize(position, name, Node(nil), annotations)
     self.isStatic = isStatic
+  end
+  
+  def setFinal!
+    self.isFinal = true
   end
 end
 

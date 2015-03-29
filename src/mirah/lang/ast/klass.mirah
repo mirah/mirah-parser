@@ -51,6 +51,10 @@ class FieldAssign < NodeImpl
   def setFinal!
     self.isFinal = true
   end
+  
+  def toString
+    "FieldAssign(#{name},#{value},#{annotations},#{isStatic},#{isFinal})"
+  end
 end
 
 class FieldAccess < NodeImpl

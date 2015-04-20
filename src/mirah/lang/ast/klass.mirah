@@ -13,15 +13,56 @@ class ClassDefinition < NodeImpl
     child_list annotations: Annotation
     child_list modifiers: Modifier
   end
+
+  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+    super()
+    position_set pos
+    name_set name
+    superclass_set superclass
+    interfaces_set interfaces
+    body_set body
+    annotations_set annotations
+    modifiers_set nil
+  end
+
+  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+      super()
+      name_set name
+      superclass_set superclass
+      interfaces_set interfaces
+      body_set body
+      annotations_set annotations
+      modifiers_set nil
+    end
 end
 
 class InterfaceDeclaration < ClassDefinition
   init_subclass(ClassDefinition)
+
+  # compatibility constructor
+  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+    super(pos, name, superclass, body, interfaces, annotations)
+  end
+
+  # compatibility constructor
+  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+    super(name, superclass, body, interfaces, annotations)
+  end
 end
 
 # Is this necessary?
 class ClosureDefinition < ClassDefinition
   init_subclass(ClassDefinition)
+
+  # compatibility constructor
+  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+    super(pos, name, superclass, body, interfaces, annotations)
+  end
+
+  # compatibility constructor
+  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
+    super(name, superclass, body, interfaces, annotations)
+  end
 end
 
 class FieldDeclaration < NodeImpl

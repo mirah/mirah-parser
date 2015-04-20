@@ -84,6 +84,7 @@ class MethodDefinition < NodeImpl
     child type: TypeName
     child_list body: Node
     child_list annotations: Annotation
+    child_list modifiers: Modifier
     # exceptions
   end
 end

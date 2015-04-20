@@ -54,3 +54,8 @@ class Annotation < NodeImpl
     child_list values: HashEntry
   end
 end
+
+
+class Modifier < NodeImpl
+    init_literal String
+end

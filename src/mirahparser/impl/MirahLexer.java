@@ -523,7 +523,9 @@ public class MirahLexer {
         }
         break;
       case 'a':
-        if (i.consume("lias")) {
+        if (i.consume("bstract")) {
+          type = Tokens.tACC_ABSTRACT;
+        } else if (i.consume("lias")) {
           type = Tokens.tAlias;
         } else if (i.consume("nd")) {
           type = Tokens.tAnd;
@@ -578,6 +580,8 @@ public class MirahLexer {
       case 'f':
         if (i.consume("alse")) {
           type = Tokens.tFalse;
+        } else if (i.consume("inal")) {
+          type = Tokens.tACC_FINAL;
         } else if (i.consume("or")) {
           type = Tokens.tFor;
         } else {
@@ -611,6 +615,8 @@ public class MirahLexer {
       case 'n':
         if (i.consume("ext")) {
           type = Tokens.tNext;
+        } else if (i.consume("ative")) {
+          type = Tokens.tACC_NATIVE;
         } else if (i.consume("il")) {
           type = Tokens.tNil;
         } else if (i.consume("ot")) {
@@ -629,6 +635,12 @@ public class MirahLexer {
       case 'p':
         if (i.consume("ackage")) {
           type = Tokens.tPackage;
+        } else if (i.consume("rivate")) {
+          type = Tokens.tACC_PRIVATE;
+        } else if (i.consume("rotected")) {
+          type = Tokens.tACC_PROTECTED;
+        }else if (i.consume("ublic")) {
+          type = Tokens.tACC_PUBLIC;
         } else {
           type = Tokens.tIDENTIFIER;
         }
@@ -673,6 +685,13 @@ public class MirahLexer {
           type = Tokens.tUnless;
         } else if (i.consume("ntil")) {
           type = Tokens.tUntil;
+        } else {
+          type = Tokens.tIDENTIFIER;
+        }
+        break;
+      case 'v':
+        if (i.consume("olatile")) {
+          type = Tokens.tACC_VOLATILE;
         } else {
           type = Tokens.tIDENTIFIER;
         }

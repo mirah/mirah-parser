@@ -66,7 +66,14 @@ public enum Tokens {
   tWhen,
   tWhile,
   tYield,
-  // ClassVar must be first after the keywords, followed by other
+  tACC_ABSTRACT,
+  tACC_PUBLIC,
+  tACC_PRIVATE,
+  tACC_PROTECTED,
+  tACC_FINAL,
+  tACC_VOLATILE,
+  tACC_NATIVE,
+    // ClassVar must be first after the keywords, followed by other
   // identifierish tokens.
   tClassVar,
   tInstVar,

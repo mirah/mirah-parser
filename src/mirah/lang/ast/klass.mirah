@@ -11,6 +11,7 @@ class ClassDefinition < NodeImpl
     child_list body: Node
     child_list interfaces: TypeName
     child_list annotations: Annotation
+    child_list modifiers: Modifier
   end
 end
 

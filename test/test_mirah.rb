@@ -360,13 +360,13 @@ EOF
   end
 
   def test_modifiers
-    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList, [Annotation, [Constant, [SimpleString, T]], [HashEntryList]]], [ModifierList, [Modifier:abstract]]]]]", "$T\nabstract class A;end")
-    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:abstract]]]]]", "abstract class A;end")
-    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:abstract], [Modifier:private]]]]]", "abstract private class A;end")
-    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:final], [Modifier:abstract], [Modifier:private]]]]]", "final abstract private class A;end")
-    assert_parse("[Script, [[MethodDefinition, [SimpleString, +], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [[Fixnum, 1]], [AnnotationList], [ModifierList, [Modifier:abstract]]]]]",
+    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList, [Annotation, [Constant, [SimpleString, T]], [HashEntryList]]], [ModifierList, [Modifier:ABSTRACT]]]]]", "$T\nabstract class A;end")
+    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:ABSTRACT]]]]]", "abstract class A;end")
+    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:ABSTRACT], [Modifier:PRIVATE]]]]]", "abstract private class A;end")
+    assert_parse("[Script, [[ClassDefinition, [Constant, [SimpleString, A]], null, [], [TypeNameList], [AnnotationList], [ModifierList, [Modifier:FINAL], [Modifier:ABSTRACT], [Modifier:PRIVATE]]]]]", "final abstract private class A;end")
+    assert_parse("[Script, [[MethodDefinition, [SimpleString, +], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [[Fixnum, 1]], [AnnotationList], [ModifierList, [Modifier:ABSTRACT]]]]]",
                  "abstract def +; 1; end")
-    assert_parse("[Script, [[StaticMethodDefinition, [SimpleString, puts], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList, [Modifier:final], [Modifier:protected]]]]]",
+    assert_parse("[Script, [[StaticMethodDefinition, [SimpleString, puts], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList, [Modifier:FINAL], [Modifier:PROTECTED]]]]]",
                  "final protected def self.puts; end")
     assert_fails("abstract")
     assert_fails("def abstract;end")

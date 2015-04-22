@@ -83,6 +83,10 @@ interface Annotated < Node do
   # end
 end
 
+interface HasModifiers < Node do
+  def modifiers:ModifierList;end
+end
+
 # Should this go somewhere else?
 # Should this support multi-dimensional arrays?
 interface TypeRef < TypeName do

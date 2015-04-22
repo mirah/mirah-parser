@@ -77,7 +77,7 @@ class BlockArgument < NodeImpl
 end
 
 class MethodDefinition < NodeImpl
-  implements Named, Annotated
+  implements Named, Annotated, HasModifiers
   init_node do
     child name: Identifier
     child arguments: Arguments
@@ -88,37 +88,13 @@ class MethodDefinition < NodeImpl
     # exceptions
   end
 
-  # compatibility constructor
-
-  def initialize(pos: Position, name: Identifier, arguments: Arguments, type: TypeName, body: NodeList, annotations: AnnotationList)
-     super()
-     position_set pos
-     name_set name
-     arguments_set arguments
-     type_set type
-     body_set body
-     annotations_set annotations
-     modifiers_set nil
-  end
-
 end
 
 class StaticMethodDefinition < MethodDefinition
   init_subclass(MethodDefinition)
 
-  # compatibility constructor
-  def initialize(pos: Position, name: Identifier, arguments: Arguments, type: TypeName, body: NodeList, annotations: AnnotationList)
-       super(pos, name, arguments, type,  body, annotations)
-  end
-
 end
 
 class ConstructorDefinition < MethodDefinition
   init_subclass(MethodDefinition)
-
-  # compatibility constructor
-  def initialize(pos: Position, name: Identifier, arguments: Arguments, type: TypeName, body: NodeList, annotations: AnnotationList)
-       super(pos, name, arguments, type,  body, annotations)
-  end
-
 end

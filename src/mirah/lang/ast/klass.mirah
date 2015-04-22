@@ -4,7 +4,7 @@ import java.util.List
 
 # Note: com.sun.source.tree uses the same node for classes, interfaces, annotations, etc.
 class ClassDefinition < NodeImpl
-  implements Annotated, Named
+  implements Annotated, Named, HasModifiers
   init_node do
     child name: Identifier
     child superclass: TypeName
@@ -14,55 +14,15 @@ class ClassDefinition < NodeImpl
     child_list modifiers: Modifier
   end
 
-  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-    super()
-    position_set pos
-    name_set name
-    superclass_set superclass
-    interfaces_set interfaces
-    body_set body
-    annotations_set annotations
-    modifiers_set nil
-  end
-
-  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-      super()
-      name_set name
-      superclass_set superclass
-      interfaces_set interfaces
-      body_set body
-      annotations_set annotations
-      modifiers_set nil
-    end
 end
 
 class InterfaceDeclaration < ClassDefinition
   init_subclass(ClassDefinition)
-
-  # compatibility constructor
-  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-    super(pos, name, superclass, body, interfaces, annotations)
-  end
-
-  # compatibility constructor
-  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-    super(name, superclass, body, interfaces, annotations)
-  end
 end
 
 # Is this necessary?
 class ClosureDefinition < ClassDefinition
   init_subclass(ClassDefinition)
-
-  # compatibility constructor
-  def initialize(pos: Position, name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-    super(pos, name, superclass, body, interfaces, annotations)
-  end
-
-  # compatibility constructor
-  def initialize(name: Identifier, superclass: TypeName,  body: NodeList, interfaces: TypeNameList,  annotations: AnnotationList)
-    super(name, superclass, body, interfaces, annotations)
-  end
 end
 
 class FieldDeclaration < NodeImpl

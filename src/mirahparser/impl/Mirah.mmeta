@@ -705,13 +705,16 @@ parser MirahParser {
   annotation_list: (a=annotation opt_nl {a})*;
 
   $Returns[Node]
-  acc_modifier: txt = ($ACC_ABSTRACT {"abstract"}|
-    $ACC_PUBLIC {"public"} |
-    $ACC_PRIVATE {"private"} |
-    $ACC_PROTECTED {"protected"} |
-    $ACC_FINAL {"final"} |
-    $ACC_VOLATILE {"volatile"} |
-    $ACC_NATIVE {"native"} )
+  acc_modifier: txt = ($ACC_ABSTRACT {"ABSTRACT"}|
+    $ACC_PUBLIC {"PUBLIC"} |
+    $ACC_PRIVATE {"PRIVATE"} |
+    $ACC_PROTECTED {"PROTECTED"} |
+    $ACC_FINAL {"FINAL"} |
+    $ACC_VOLATILE {"VOLATILE"} |
+    $ACC_NATIVE {"NATIVE"} |
+    $ACC_DEFAULT {"DEFAULT"} |
+    $ACC_TRANSIENT {"TRANSIENT"}
+    )
               -> ^(Modifier txt);
 
   $Returns[List]

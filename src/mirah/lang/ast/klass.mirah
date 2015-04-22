@@ -36,18 +36,26 @@ class FieldDeclaration < NodeImpl
 end
 
 class FieldAssign < NodeImpl
-  implements Annotated, Named, Assignment
+  implements Annotated, Named, Assignment, HasModifiers
   init_node do
     child name: Identifier
     child value: Node
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    child_list modifiers: Modifier
+  end
+
+  def initialize(position:Position, name:Identifier, annotations:List, isStatic:boolean, modifiers: List)
+    initialize(position, name, Node(nil), annotations, modifiers)
+    self.isStatic = isStatic
   end
 
   def initialize(position:Position, name:Identifier, annotations:List, isStatic:boolean)
-    initialize(position, name, Node(nil), annotations)
+    initialize(position, name, Node(nil), annotations, nil)
     self.isStatic = isStatic
   end
+
+
 end
 
 class FieldAccess < NodeImpl
@@ -92,11 +100,12 @@ class Colon3 < Constant
 end
 
 class ConstantAssign < NodeImpl
-  implements Annotated, Named, Assignment
+  implements Annotated, Named, Assignment, HasModifiers
   init_node do
     child name: Identifier
     child value: Node
     child_list annotations: Annotation
+    child_list modifiers: Modifier
   end
 end
 

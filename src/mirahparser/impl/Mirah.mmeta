@@ -640,7 +640,7 @@ parser MirahParser {
 
   $Memo[Assignment]
   lhs: (($ClassVar|$InstVar|$CONSTANT|$IDENTIFIER) $EQ)=> var_lhs
-     | ($Dollar|$Backtick|$ClassVarBacktick|$InstVarBacktick)=> (var_lhs | lhs2)
+     | ($Dollar|$Backtick|$ClassVarBacktick|$InstVarBacktick|acc_modifier)=> (var_lhs | lhs2)
   #   | ($Colons $CONSTANT)=> colon3 n=constant -> ^(ConstantAssign ^(Colon3 n))
      | lhs2;
   $Returns[Assignment]
@@ -654,9 +654,10 @@ parser MirahParser {
 
   $Returns[Assignment]
   var_lhs: ( annotations=annotation_list
-             ( ($ClassVar|$ClassVarBacktick)=> n=cvar -> ^(FieldAssign n annotations true)
-             | ($InstVar|$InstVarBacktick)=> n=ivar -> ^(FieldAssign n annotations false)
-             | ($CONSTANT)=> n=constant -> ^(ConstantAssign n nil annotations)
+             m=acc_modifier_list
+             ( ($ClassVar|$ClassVarBacktick)=> n=cvar -> ^(FieldAssign n annotations true m)
+             | ($InstVar|$InstVarBacktick)=> n=ivar -> ^(FieldAssign n annotations false m)
+             | ($CONSTANT)=> n=constant -> ^(ConstantAssign n nil annotations m)
              )
            )
          | ($IDENTIFIER)=> n=identifier -> ^(LocalAssignment n nil)

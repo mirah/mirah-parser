@@ -26,12 +26,13 @@ class ClosureDefinition < ClassDefinition
 end
 
 class FieldDeclaration < NodeImpl
-  implements Annotated, Named
+  implements Annotated, Named, HasModifiers
   init_node do
     child name: Identifier
     child type: TypeName
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    child_list modifiers: Modifier
   end
 end
 

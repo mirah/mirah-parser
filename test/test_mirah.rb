@@ -368,6 +368,8 @@ EOF
                  "abstract def +; 1; end")
     assert_parse("[Script, [[StaticMethodDefinition, [SimpleString, puts], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList, [Modifier:FINAL], [Modifier:PROTECTED]]]]]",
                  "final protected def self.puts; end")
+    assert_parse("[Script, [[StaticMethodDefinition, [SimpleString, puts], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList, [Modifier:FINAL], [Modifier:SYNCHRONIZED]]]]]",
+                 "final synchronized def self.puts; end")
     assert_parse("[Script, [[ConstantAssign, [SimpleString, A], [VCall, [SimpleString, b]], [AnnotationList], [ModifierList, [Modifier:FINAL]]]]]", "final A = b")
     assert_parse("[Script, [[FieldAssign, [SimpleString, a], [VCall, [SimpleString, b]], [AnnotationList], [ModifierList, [Modifier:PROTECTED]]]]]", "protected @a = b")
     assert_parse("[Script, [[FieldAssign, [SimpleString, a], [VCall, [SimpleString, b]], [AnnotationList], [ModifierList, [Modifier:FINAL], [Modifier:TRANSIENT]], static]]]", "final transient @@a = b")

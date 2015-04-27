@@ -714,6 +714,7 @@ parser MirahParser {
     $ACC_VOLATILE {"VOLATILE"} |
     $ACC_NATIVE {"NATIVE"} |
     $ACC_DEFAULT {"DEFAULT"} |
+    $ACC_SYNCHRONIZED {"SYNCHRONIZED"} |
     $ACC_TRANSIENT {"TRANSIENT"}
     )
               -> ^(Modifier txt);

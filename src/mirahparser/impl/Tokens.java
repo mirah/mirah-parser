@@ -75,6 +75,7 @@ public enum Tokens {
   tACC_NATIVE,
   tACC_DEFAULT,
   tACC_TRANSIENT,
+  tACC_SYNCHRONIZED,
     // ClassVar must be first after the keywords, followed by other
   // identifierish tokens.
   tClassVar,

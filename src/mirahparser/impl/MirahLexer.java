@@ -667,6 +667,8 @@ public class MirahLexer {
           type = Tokens.tSelf;
         } else if (i.consume("uper")) {
           type = Tokens.tSuper;
+        } else if (i.consume("ynchronized")) {
+          type = Tokens.tACC_SYNCHRONIZED;
         } else {
           type = Tokens.tIDENTIFIER;
         }

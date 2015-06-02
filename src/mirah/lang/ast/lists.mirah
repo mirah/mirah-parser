@@ -31,3 +31,7 @@ end
 class OptionalArgumentList < NodeImpl
   init_list OptionalArgument
 end
+
+class ModifierList < NodeImpl
+  init_list Modifier
+end

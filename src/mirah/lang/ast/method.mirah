@@ -16,6 +16,7 @@
 package mirahparser.lang.ast
 
 import java.util.Collections
+import java.util.List
 
 interface FormalArgument < Named do
   def name:Identifier; end
@@ -77,21 +78,47 @@ class BlockArgument < NodeImpl
 end
 
 class MethodDefinition < NodeImpl
-  implements Named, Annotated
+  implements Named, Annotated, HasModifiers
   init_node do
     child name: Identifier
     child arguments: Arguments
     child type: TypeName
     child_list body: Node
     child_list annotations: Annotation
-    # exceptions
+    child_list modifiers: Modifier
+    child java_doc: Node
   end
+
+  def initialize(p:Position, name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+    initialize(p, name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+      initialize(name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
+
 end
 
 class StaticMethodDefinition < MethodDefinition
   init_subclass(MethodDefinition)
+
+  def initialize(p:Position, name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+    initialize(p, name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+      initialize(name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
 end
 
 class ConstructorDefinition < MethodDefinition
   init_subclass(MethodDefinition)
+
+  def initialize(p:Position, name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+    initialize(p, name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name: Identifier, arguments: Arguments, type:TypeName, body: List, annotations: List, modifiers:List)
+      initialize(name, arguments, type, body, annotations, modifiers, Node(nil))
+  end
 end

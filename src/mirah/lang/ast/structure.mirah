@@ -48,9 +48,18 @@ class Script < NodeImpl
   end
 end
 
+class JavaDoc < NodeImpl
+  init_literal String
+end
+
 class Annotation < NodeImpl
   init_node do
     child type: TypeName
     child_list values: HashEntry
   end
+end
+
+
+class Modifier < NodeImpl
+    init_literal String
 end

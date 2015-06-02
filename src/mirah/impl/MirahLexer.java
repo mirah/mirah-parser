@@ -14,17 +14,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package mirahparser.impl;
+package mirah.impl;
+
+import mirahparser.impl.Tokens;
+import mmeta.BaseParser;
+import mmeta.BaseParser.Token;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.logging.Logger;
-
-import mmeta.BaseParser;
-import mmeta.BaseParser.Token;
-
 public class MirahLexer {
 
   private static final Logger logger = Logger.getLogger(MirahLexer.class.getName());
@@ -405,7 +405,7 @@ public class MirahLexer {
   }
 
   private static class StandardLexer implements Lexer {
-    @Override
+
     public Tokens lex(MirahLexer l, Input i) {
       Tokens type = processFirstChar(l, i);
       type = checkKeyword(type, i);
@@ -435,9 +435,6 @@ public class MirahLexer {
           i.consumeLine();
           return Tokens.tComment;
         case '/':
-          if (found_whitespace) {
-             break ws;
-          }
           if (i.consume('*')) {
             return readBlockComment(l, i);
           }
@@ -526,9 +523,7 @@ public class MirahLexer {
         }
         break;
       case 'a':
-        if (i.consume("bstract")) {
-          type = Tokens.tACC_ABSTRACT;
-        } else if (i.consume("lias")) {
+        if (i.consume("lias")) {
           type = Tokens.tAlias;
         } else if (i.consume("nd")) {
           type = Tokens.tAnd;
@@ -557,8 +552,6 @@ public class MirahLexer {
       case 'd':
         if (i.consume("efined")) {
           type = Tokens.tDefined;
-        } else if (i.consume("efault")) {
-	      type = Tokens.tACC_DEFAULT;
         } else if (i.consume("efmacro")) {
           type = Tokens.tDefmacro;
         } else if (i.consume("ef")) {
@@ -585,8 +578,6 @@ public class MirahLexer {
       case 'f':
         if (i.consume("alse")) {
           type = Tokens.tFalse;
-        } else if (i.consume("inal")) {
-          type = Tokens.tACC_FINAL;
         } else if (i.consume("or")) {
           type = Tokens.tFor;
         } else {
@@ -620,8 +611,6 @@ public class MirahLexer {
       case 'n':
         if (i.consume("ext")) {
           type = Tokens.tNext;
-        } else if (i.consume("ative")) {
-          type = Tokens.tACC_NATIVE;
         } else if (i.consume("il")) {
           type = Tokens.tNil;
         } else if (i.consume("ot")) {
@@ -640,12 +629,6 @@ public class MirahLexer {
       case 'p':
         if (i.consume("ackage")) {
           type = Tokens.tPackage;
-        } else if (i.consume("rivate")) {
-          type = Tokens.tACC_PRIVATE;
-        } else if (i.consume("rotected")) {
-          type = Tokens.tACC_PROTECTED;
-        }else if (i.consume("ublic")) {
-          type = Tokens.tACC_PUBLIC;
         } else {
           type = Tokens.tIDENTIFIER;
         }
@@ -670,8 +653,6 @@ public class MirahLexer {
           type = Tokens.tSelf;
         } else if (i.consume("uper")) {
           type = Tokens.tSuper;
-        } else if (i.consume("ynchronized")) {
-          type = Tokens.tACC_SYNCHRONIZED;
         } else {
           type = Tokens.tIDENTIFIER;
         }
@@ -679,9 +660,7 @@ public class MirahLexer {
       case 't':
         if (i.consume("hen")) {
           type = Tokens.tThen;
-        } else if (i.consume("ransient")) {
-          type = Tokens.tACC_TRANSIENT;
-        }else if (i.consume("rue")) {
+        } else if (i.consume("rue")) {
           type = Tokens.tTrue;
         } else {
           type = Tokens.tIDENTIFIER;
@@ -694,13 +673,6 @@ public class MirahLexer {
           type = Tokens.tUnless;
         } else if (i.consume("ntil")) {
           type = Tokens.tUntil;
-        } else {
-          type = Tokens.tIDENTIFIER;
-        }
-        break;
-      case 'v':
-        if (i.consume("olatile")) {
-          type = Tokens.tACC_VOLATILE;
         } else {
           type = Tokens.tIDENTIFIER;
         }
@@ -792,11 +764,7 @@ public class MirahLexer {
         break;
       case '!':
         if (i.consume('=')) {
-          if (i.consume('=')) {
-            type = Tokens.tNEE;
-          } else {
-            type = Tokens.tNE;
-          }
+          type = Tokens.tNE;
         } else if (i.consume('~')) {
           type = Tokens.tNMatch;
         } else {
@@ -1291,50 +1259,32 @@ public class MirahLexer {
     isEND = endTokens.contains(type);
     return type;
   }
-  
 
   public Token<Tokens> lex(int pos) {
-    return lex(pos, true, true);
-  }
-
-  public Token<Tokens> lex(int pos, boolean skipWhitespaceAndAllComments) {
-      return lex(pos, skipWhitespaceAndAllComments, skipWhitespaceAndAllComments);
-  }
-
-  public Token<Tokens> lex(int pos, boolean skipWhitespaceAndComments, boolean skipJavaDocs) {
-      if (pos < input.pos()) {
-          ListIterator<Token<Tokens>> it = tokens.listIterator(tokens.size());
-          while (it.hasPrevious()) {
-              Token<Tokens> savedToken = it.previous();
-              if (pos >= savedToken.pos && pos <= savedToken.startpos) {
-                  logger.fine("Warning, uncached token " + savedToken.type + " at " + pos);
-                  parser._pos = savedToken.endpos;
-                  return savedToken;
-              }
-          }
-          throw new IllegalArgumentException("" + pos + " < " + input.pos());
-      } else if (!input.hasNext()) {
-          return parser.build_token(state.hereDocs.isEmpty() ? Tokens.tEOF : Tokens.tHereDocBegin, pos, pos);
+    if (pos < input.pos()) {
+      ListIterator<Token<Tokens>> it = tokens.listIterator(tokens.size());
+      while (it.hasPrevious()) {
+        Token<Tokens> savedToken = it.previous();
+        if (pos >= savedToken.pos && pos <= savedToken.startpos) {
+          logger.fine("Warning, uncached token " + savedToken.type + " at " + pos);
+          parser._pos = savedToken.endpos;
+          return savedToken;
+        }
       }
-      Tokens type;
-      int start;
-
-      while (true) {
-          start = input.pos();
-          type = simpleLex();
-          if (skipWhitespaceAndComments && (type == Tokens.tWhitespace || type == Tokens.tComment)) {
-              continue;
-          } else if (skipJavaDocs && type == Tokens.tJavaDoc) {
-              continue;
-          } else {
-              break;
-          }
-      }
-
-      parser._pos = input.pos();
-      Token<Tokens> token = parser.build_token(type, pos, start);
-      tokens.add(token);
-      return token;
+      throw new IllegalArgumentException("" + pos + " < " + input.pos());
+    } else if (!input.hasNext()) {
+      return parser.build_token(state.hereDocs.isEmpty() ? Tokens.tEOF : Tokens.tHereDocBegin, pos, pos);
+    }
+    Tokens type = Tokens.tWhitespace;
+    int start = input.pos();
+    while (type.ordinal() > Tokens.tEOF.ordinal()) {
+      start = input.pos();
+      type = simpleLex();
+    }
+    parser._pos = input.pos();
+    Token<Tokens> token = parser.build_token(type, pos, start);
+    tokens.add(token);
+    return token;
   }
   
   void noteNewline() {

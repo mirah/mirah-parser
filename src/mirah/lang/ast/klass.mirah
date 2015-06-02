@@ -4,48 +4,84 @@ import java.util.List
 
 # Note: com.sun.source.tree uses the same node for classes, interfaces, annotations, etc.
 class ClassDefinition < NodeImpl
-  implements Annotated, Named
+  implements Annotated, Named, HasModifiers
   init_node do
     child name: Identifier
     child superclass: TypeName
     child_list body: Node
     child_list interfaces: TypeName
     child_list annotations: Annotation
+    child_list modifiers: Modifier
+    child java_doc: Node
   end
+
+  def initialize(p:Position, name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+    initialize(p, name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+      initialize(name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
+
 end
 
 class InterfaceDeclaration < ClassDefinition
   init_subclass(ClassDefinition)
+
+  def initialize(p:Position, name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+    initialize(p, name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+      initialize(name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
 end
 
 # Is this necessary?
 class ClosureDefinition < ClassDefinition
   init_subclass(ClassDefinition)
+
+  def initialize(p:Position, name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+    initialize(p, name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
+
+  def initialize(name:Identifier, super_class: TypeName, body: List, interfaces: List, annotations: List, modifiers: List)
+    initialize(name, super_class, body, interfaces, annotations, modifiers, Node(nil))
+  end
 end
 
 class FieldDeclaration < NodeImpl
-  implements Annotated, Named
+  implements Annotated, Named, HasModifiers
   init_node do
     child name: Identifier
     child type: TypeName
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    child_list modifiers: Modifier
   end
 end
 
 class FieldAssign < NodeImpl
-  implements Annotated, Named, Assignment
+  implements Annotated, Named, Assignment, HasModifiers
   init_node do
     child name: Identifier
     child value: Node
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    child_list modifiers: Modifier
+  end
+
+  def initialize(position:Position, name:Identifier, annotations:List, isStatic:boolean, modifiers: List)
+    initialize(position, name, Node(nil), annotations, modifiers)
+    self.isStatic = isStatic
   end
 
   def initialize(position:Position, name:Identifier, annotations:List, isStatic:boolean)
-    initialize(position, name, Node(nil), annotations)
+    initialize(position, name, Node(nil), annotations, nil)
     self.isStatic = isStatic
   end
+
+
 end
 
 class FieldAccess < NodeImpl
@@ -90,11 +126,12 @@ class Colon3 < Constant
 end
 
 class ConstantAssign < NodeImpl
-  implements Annotated, Named, Assignment
+  implements Annotated, Named, Assignment, HasModifiers
   init_node do
     child name: Identifier
     child value: Node
     child_list annotations: Annotation
+    child_list modifiers: Modifier
   end
 end
 

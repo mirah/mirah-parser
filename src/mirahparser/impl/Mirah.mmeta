@@ -212,6 +212,8 @@ parser MirahParser {
           | ($Def)=> primary2_def
           | ($Macro|$Defmacro)=> primary2_macro
           | ($Dollar)=> (primary2_class | primary2_interface | primary2_def | primary2_macro)
+          | (java_doc) => (primary2_class | primary2_interface | primary2_def | primary2_macro)
+          | (acc_modifier)=> (primary2_class | primary2_interface | primary2_def | primary2_macro)
           | ($Break)=> primary2_break
           | ($Next)=> primary2_next
           | ($Redo)=> primary2_redo
@@ -298,7 +300,9 @@ parser MirahParser {
   $Scope[@BEG]
   $Returns[Node]
   primary2_class
-         : annotations=annotation_list
+         : jdoc = java_doc?
+		       annotations=annotation_list
+           m=acc_modifier_list
            t=$Class sp=block_start(t)!
            ( $LShift! BEG e=$Self
              term! b=compstmt! verify_end(sp)! $End
@@ -309,12 +313,13 @@ parser MirahParser {
                           # sense for mirah. Maybe rescuing exceptions
                           # in the static initializer?
              verify_end(sp)! $End
-             -> ^(ClassDefinition n s b ifaces annotations)
+             -> ^(ClassDefinition n s b ifaces annotations m jdoc)
            );
   $Scope[@cond]
   $Returns[Node]
   primary2_interface
-         : annotations=annotation_list
+         : jdoc = java_doc?
+		       annotations=annotation_list
            t=$Interface!
            sp=block_start(t)
            n=cname! ifaces=($LT! rlistOf(:cpath)
@@ -323,7 +328,7 @@ parser MirahParser {
            Do!
            b=compstmt!
            verify_end(sp) $End
-            -> ^(InterfaceDeclaration n nil b ifaces annotations)
+            -> ^(InterfaceDeclaration n nil b ifaces annotations nil jdoc)
            ;
   $Returns[Node]
   primary2_import
@@ -360,30 +365,33 @@ parser MirahParser {
   $Scope[@BEG]
   $Returns[Node]
   primary2_def
-         : annotations=annotation_list
+         : jdoc = java_doc?
+		       annotations=annotation_list
+           m=acc_modifier_list
            t=$Def s=block_start(t)!
            ( $Self! dot_or_colon! name=fname!
              arglist=f_arglist! body=bodystmt! verify_end(s)! $End
              {args = arglist.args; type=arglist.returnType}
-             -> ^(StaticMethodDefinition name args type body annotations)
+             -> ^(StaticMethodDefinition name args type body annotations m jdoc)
            | name=fname! arglist=f_arglist! body=bodystmt! verify_end(s)! $End
              {args = arglist.args; type=arglist.returnType}
              ( ?{nameIs(name, "initialize")}
-               -> ^(ConstructorDefinition name args type body annotations)
-             | -> ^(MethodDefinition name args type body annotations)
+               -> ^(ConstructorDefinition name args type body annotations m jdoc)
+             | -> ^(MethodDefinition name args type body annotations m jdoc)
              )
            );
   $Scope[@BEG]
   $Returns[Node]
   primary2_macro
-         : annotations=annotation_list
+         : jdoc = java_doc?
+           annotations=annotation_list
            (t=$Defmacro! | t=$Macro! $Def) s=block_start(t)
            isStatic=($Self dot_or_colon)?
            name=fname!
            ($LParen! opt_nl args=f_args opt_nl $RParen)?
            (?{t == Tokens.tDefmacro} $Do)?
            body=bodystmt! verify_end(s)! $End
-           node=-> ^(MacroDefinition name args body annotations)
+           node=-> ^(MacroDefinition name args body annotations jdoc)
            {node.isStatic = (isStatic != nil); node}
          ;
   primary2_break: $Break -> ^(Break);
@@ -637,7 +645,7 @@ parser MirahParser {
 
   $Memo[Assignment]
   lhs: (($ClassVar|$InstVar|$CONSTANT|$IDENTIFIER) $EQ)=> var_lhs
-     | ($Dollar|$Backtick|$ClassVarBacktick|$InstVarBacktick)=> (var_lhs | lhs2)
+     | ($Dollar|$Backtick|$ClassVarBacktick|$InstVarBacktick|acc_modifier)=> (var_lhs | lhs2)
   #   | ($Colons $CONSTANT)=> colon3 n=constant -> ^(ConstantAssign ^(Colon3 n))
      | lhs2;
   $Returns[Assignment]
@@ -651,9 +659,10 @@ parser MirahParser {
 
   $Returns[Assignment]
   var_lhs: ( annotations=annotation_list
-             ( ($ClassVar|$ClassVarBacktick)=> n=cvar -> ^(FieldAssign n annotations true)
-             | ($InstVar|$InstVarBacktick)=> n=ivar -> ^(FieldAssign n annotations false)
-             | ($CONSTANT)=> n=constant -> ^(ConstantAssign n nil annotations)
+             m=acc_modifier_list
+             ( ($ClassVar|$ClassVarBacktick)=> n=cvar -> ^(FieldAssign n annotations true m)
+             | ($InstVar|$InstVarBacktick)=> n=ivar -> ^(FieldAssign n annotations false m)
+             | ($CONSTANT)=> n=constant -> ^(ConstantAssign n nil annotations m)
              )
            )
          | ($IDENTIFIER)=> n=identifier -> ^(LocalAssignment n nil)
@@ -700,6 +709,26 @@ parser MirahParser {
 
   $Returns[List]
   annotation_list: (a=annotation opt_nl {a})*;
+
+  $Returns[Node]
+  acc_modifier: txt = ($ACC_ABSTRACT {"ABSTRACT"}|
+    $ACC_PUBLIC {"PUBLIC"} |
+    $ACC_PRIVATE {"PRIVATE"} |
+    $ACC_PROTECTED {"PROTECTED"} |
+    $ACC_FINAL {"FINAL"} |
+    $ACC_VOLATILE {"VOLATILE"} |
+    $ACC_NATIVE {"NATIVE"} |
+    $ACC_DEFAULT {"DEFAULT"} |
+    $ACC_SYNCHRONIZED {"SYNCHRONIZED"} |
+    $ACC_TRANSIENT {"TRANSIENT"}
+    )
+              -> ^(Modifier txt);
+
+  $Returns[List]
+  acc_modifier_list: (a=acc_modifier {a})*;
+
+  $Returns[Node]
+  java_doc: txt = (s = $JavaDoc opt_nl {Token(s).text}) -> ^(JavaDoc txt);
 
   op: text=($LT {"<"}
            | $LE {"<="}
@@ -960,7 +989,7 @@ parser MirahParser {
   }
 
   $Memo[Token]
-  _lex: {@lexer.lex(_pos)};
+  _lex: {@lexer.lex(_pos, @skipWhitespaceAndComments, @skipJavaDoc)};
 
   def _lex(type:Tokens) {
     token = _lex
@@ -1043,6 +1072,16 @@ parser MirahParser {
     @reserved = EnumSet.range(Tokens.tBEGIN, Tokens.tYield)
     @heredocs = LinkedList.new
     @escape = EscapeParser.new
+    @skipWhitespaceAndComments = true
+    @skipJavaDoc = true
+  }
+
+  def skip_whitespace(skip:boolean=true) {
+    @skipWhitespaceAndComments = skip
+  }
+
+  def skip_java_doc(skip:boolean=true) {
+    @skipJavaDoc = skip
   }
 
   def init {

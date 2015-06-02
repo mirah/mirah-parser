@@ -383,14 +383,15 @@ parser MirahParser {
   $Scope[@BEG]
   $Returns[Node]
   primary2_macro
-         : annotations=annotation_list
+         : jdoc = java_doc?
+           annotations=annotation_list
            (t=$Defmacro! | t=$Macro! $Def) s=block_start(t)
            isStatic=($Self dot_or_colon)?
            name=fname!
            ($LParen! opt_nl args=f_args opt_nl $RParen)?
            (?{t == Tokens.tDefmacro} $Do)?
            body=bodystmt! verify_end(s)! $End
-           node=-> ^(MacroDefinition name args body annotations)
+           node=-> ^(MacroDefinition name args body annotations jdoc)
            {node.isStatic = (isStatic != nil); node}
          ;
   primary2_break: $Break -> ^(Break);
@@ -727,7 +728,7 @@ parser MirahParser {
   acc_modifier_list: (a=acc_modifier {a})*;
 
   $Returns[Node]
-  java_doc: txt = (s = $JavaDoc {Token(s).text}) -> ^(JavaDoc txt);
+  java_doc: txt = (s = $JavaDoc opt_nl {Token(s).text}) -> ^(JavaDoc txt);
 
   op: text=($LT {"<"}
            | $LE {"<="}

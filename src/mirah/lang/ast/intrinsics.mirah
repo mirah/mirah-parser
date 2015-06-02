@@ -170,5 +170,6 @@ class MacroDefinition < NodeImpl
     child_list body: Node
     child_list annotations: Annotation
     attr_accessor isStatic: 'boolean'
+    child java_doc: Node
   end
 end

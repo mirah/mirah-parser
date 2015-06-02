@@ -85,14 +85,13 @@ class MethodDefinition < NodeImpl
     child_list body: Node
     child_list annotations: Annotation
     child_list modifiers: Modifier
-    # exceptions
+    child java_doc: Node
   end
 
 end
 
 class StaticMethodDefinition < MethodDefinition
   init_subclass(MethodDefinition)
-
 end
 
 class ConstructorDefinition < MethodDefinition

@@ -12,6 +12,7 @@ class ClassDefinition < NodeImpl
     child_list interfaces: TypeName
     child_list annotations: Annotation
     child_list modifiers: Modifier
+    child java_doc: Node
   end
 
 end

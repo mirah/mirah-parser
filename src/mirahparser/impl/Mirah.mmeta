@@ -989,7 +989,7 @@ parser MirahParser {
   }
 
   $Memo[Token]
-  _lex: {@lexer.lex(_pos, true, false)};
+  _lex: {@lexer.lex(_pos, @skipWhitespaceAndComments, @skipJavaDoc)};
 
   def _lex(type:Tokens) {
     token = _lex
@@ -1072,6 +1072,16 @@ parser MirahParser {
     @reserved = EnumSet.range(Tokens.tBEGIN, Tokens.tYield)
     @heredocs = LinkedList.new
     @escape = EscapeParser.new
+    @skipWhitespaceAndComments = true
+    @skipJavaDoc = true
+  }
+
+  def skip_whitespace(skip:boolean=true) {
+    @skipWhitespaceAndComments = skip
+  }
+
+  def skip_java_doc(skip:boolean=true) {
+    @skipJavaDoc = skip
   }
 
   def init {

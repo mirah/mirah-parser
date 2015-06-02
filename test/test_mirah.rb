@@ -92,10 +92,33 @@ class TestParsing < Test::Unit::TestCase
     result
   end
 
+  def parse(text, debug=false, &block)
+    @count ||= 0
+    filename = "#{self.class.name}-#{@count += 1}"
+    mirah_parser = MirahParser.new
+    if @parser_options
+        mirah_parser.instance_eval &@parser_options
+    end
+    yield mirah_parser if block_given?
+    MirahParser.tracing = debug
+    result = mirah_parser.parse(StringCodeSource.new(filename, text))
+    puts BaseParser.print_r(result) if debug
+    result
+  end
+
   def assert_parse(expected, text, debug=false)
     ast = parse(text, debug)
     str = AstPrinter.new.scan(ast, ast)
     assert_equal(expected, str, "expected '#{text}' to be converted")
+  end
+
+  def parser_options &block
+    @parser_options = block
+  end
+
+  def with_options &block
+    instance_eval &block
+    @parser_options = nil
   end
 
   def assert_fails(text)
@@ -1000,15 +1023,22 @@ EOF
   end
 
   def test_java_doc
-    assert_parse "[Script, [[MethodDefinition, [SimpleString, a], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList], [JavaDoc]]]]",
-                 '/** jdoc */ def a;end'
-    assert_parse "[Script, [[MethodDefinition, [SimpleString, a], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList, [Annotation, [Constant, [SimpleString, Anno]], [HashEntryList]]], [ModifierList], [JavaDoc]]]]",
-                 "/** jdoc */ $Anno\n def a;end"
-    assert_parse "[Script, [[ClassDefinition, [Constant, [SimpleString, a]], null, [], [TypeNameList], [AnnotationList], [ModifierList], [JavaDoc]]]]",
-                 "/** jdoc */ \nclass a;end"
-    assert_parse "[Script, [[ClassDefinition, [Constant, [SimpleString, a]], null, [], [TypeNameList], [AnnotationList, [Annotation, [Constant, [SimpleString, Anno]], [HashEntryList]]], [ModifierList], [JavaDoc]]]]",
-                 "/** jdoc */\n $Anno \n class a;end"
-    assert_parse "[Script, [[MacroDefinition, [SimpleString, a], null, [], [AnnotationList], [JavaDoc]]]]",
-                 '/** jdoc */ macro def a;end'
+    with_options do
+      parser_options do
+        skip_java_doc false
+      end
+
+      assert_parse "[Script, [[MethodDefinition, [SimpleString, a], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList], [ModifierList], [JavaDoc]]]]",
+                   '/** jdoc */ def a;end'
+      assert_parse "[Script, [[MethodDefinition, [SimpleString, a], [Arguments, [RequiredArgumentList], [OptionalArgumentList], null, [RequiredArgumentList], null], null, [], [AnnotationList, [Annotation, [Constant, [SimpleString, Anno]], [HashEntryList]]], [ModifierList], [JavaDoc]]]]",
+                   "/** jdoc */ $Anno\n def a;end"
+      assert_parse "[Script, [[ClassDefinition, [Constant, [SimpleString, a]], null, [], [TypeNameList], [AnnotationList], [ModifierList], [JavaDoc]]]]",
+                   "/** jdoc */ \nclass a;end"
+      assert_parse "[Script, [[ClassDefinition, [Constant, [SimpleString, a]], null, [], [TypeNameList], [AnnotationList, [Annotation, [Constant, [SimpleString, Anno]], [HashEntryList]]], [ModifierList], [JavaDoc]]]]",
+                   "/** jdoc */\n $Anno \n class a;end"
+      assert_parse "[Script, [[MacroDefinition, [SimpleString, a], null, [], [AnnotationList], [JavaDoc]]]]",
+                   '/** jdoc */ macro def a;end'
+    end
   end
+
 end

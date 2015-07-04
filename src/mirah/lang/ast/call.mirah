@@ -56,7 +56,7 @@ end
 
 class Cast < NodeImpl
   init_node do
-    child type: TypeName
+    child type: TypeFutureOrNow
     child value: Node
   end
 end

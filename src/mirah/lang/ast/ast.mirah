@@ -66,7 +66,11 @@ interface Identifier < Node do
   def identifier:String; end
 end
 
-interface TypeName < Node do
+# Either a TypeName or a TypeFutureNode, which holds a TypeFuture
+interface TypeFutureOrNow < Node do
+end
+
+interface TypeName < TypeFutureOrNow do
   def typeref:TypeRef; end
 end
 

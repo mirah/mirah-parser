@@ -59,6 +59,10 @@ class Cast < NodeImpl
     child type: TypeFutureOrNow
     child value: Node
   end
+  
+# def initialize(position:Position,type:TypeName,value:Node) # compatibility
+#   self.initialize(position,TypeFutureOrNow(type),value)
+# end
 end
 
 class Call < NodeImpl
@@ -121,4 +125,4 @@ class BlockPass < NodeImpl
   init_node do
     child value: Node
   end
-end
+end	

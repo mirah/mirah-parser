@@ -95,3 +95,20 @@ end
 class ConstructorDefinition < MethodDefinition
   init_subclass(MethodDefinition)
 end
+
+class Initializer < NodeImpl
+  init_node do
+    child_list body: Node
+  end
+end
+
+# initializes fields of a class (static fields), once per class initialization
+class ClassInitializer < Initializer
+  init_subclass(Initializer)
+end
+
+# initializes fields of an object (non-static fields), once per object initialization 
+class ObjectInitializer < Initializer
+  init_subclass(Initializer)
+end
+
